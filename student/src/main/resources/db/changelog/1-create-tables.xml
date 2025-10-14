@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.10.xsd">
+
+    <!-- ====================================== -->
+    <!-- 1. Таблица Specialty -->
+    <!-- ====================================== -->
+    <changeSet id="1-create-specialty" author="tim">
+        <createTable tableName="specialty">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- ====================================== -->
+    <!-- 2. Таблица Course -->
+    <!-- ====================================== -->
+    <changeSet id="2-create-course" author="tim">
+        <createTable tableName="course">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="semester" type="INT"/>
+            <column name="teacher_id" type="UUID"/>
+        </createTable>
+
+        <createTable tableName="course_specialty">
+            <column name="course_id" type="UUID">
+                <constraints nullable="false"
+                             foreignKeyName="fk_course_specialty_course"
+                             references="course(id)"/>
+            </column>
+            <column name="specialty_id" type="UUID">
+                <constraints nullable="false"
+                             foreignKeyName="fk_course_specialty_specialty"
+                             references="specialty(id)"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey
+                tableName="course_specialty"
+                columnNames="course_id, specialty_id"
+                constraintName="pk_course_specialty"/>
+    </changeSet>
+
+    <!-- ====================================== -->
+    <!-- 3. Таблица StudentGroup -->
+    <!-- ====================================== -->
+    <changeSet id="3-create-student-group" author="tim">
+        <createTable tableName="student_group">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="specialty_id" type="UUID">
+                <constraints nullable="false"
+                             foreignKeyName="fk_group_specialty"
+                             references="specialty(id)"/>
+            </column>
+            <column name="year" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- ====================================== -->
+    <!-- 4. Таблица Student -->
+    <!-- ====================================== -->
+    <changeSet id="4-create-student" author="tim">
+        <createTable tableName="student">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="full_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="group_id" type="UUID">
+                <constraints nullable="false"
+                             foreignKeyName="fk_student_group"
+                             references="student_group(id)"/>
+            </column>
+            <column name="status" type="VARCHAR(50)"/>
+            <column name="created_at" type="TIMESTAMP"
+                    defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP"
+                    defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>
