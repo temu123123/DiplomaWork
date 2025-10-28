@@ -1,4 +1,4 @@
-package com.diploma.student.dao;
+package com.diploma.student.repository;
 
 import com.diploma.student.entity.StudentGroup;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,63 +1,26 @@
 package com.diploma.student.advice;
 
-import com.diploma.student.exception.CourseNotFoundException;
-import com.diploma.student.exception.SpecialtyNotFoundException;
-import com.diploma.student.exception.StudentGroupNotFoundException;
-import com.diploma.student.exception.StudentNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
+@Slf4j
+@RestControllerAdvice
+public class StudentAdvice extends ResponseEntityExceptionHandler {
 
-@ControllerAdvice
-public class StudentAdvice {
-
-    @ExceptionHandler(CourseNotFoundException.class)
-    public ResponseEntity<Object> handleCourseNotFoundException(CourseNotFoundException ex) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatus.NOT_FOUND.value());
-        body.put("error", "Course Not Found");
-        body.put("message", ex.getMessage());
-
-        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(SpecialtyNotFoundException.class)
-    public ResponseEntity<Object> handleSpecialtyNotFoundException(SpecialtyNotFoundException ex) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatus.NOT_FOUND.value());
-        body.put("error", "Specialty Not Found");
-        body.put("message", ex.getMessage());
-
-        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(StudentGroupNotFoundException.class)
-    public ResponseEntity<Object> handleStudentGroupNotFoundException(StudentGroupNotFoundException ex) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatus.NOT_FOUND.value());
-        body.put("error", "StudentGroup Not Found");
-        body.put("message", ex.getMessage());
-
-        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(StudentNotFoundException.class)
-    public ResponseEntity<Object> handleStudentNotFoundException(StudentNotFoundException ex) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatus.NOT_FOUND.value());
-        body.put("error", "Student Not Found");
-        body.put("message", ex.getMessage());
-
-        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    @ExceptionHandler(EntityNotFoundException.class)
+    ResponseEntity<ProblemDetail> handleEntityNotFoundException(
+            EntityNotFoundException ex,
+            WebRequest webRequest) {
+        log.error(ex.getMessage(), ex);
+        ProblemDetail problemDetail = createProblemDetail(ex, HttpStatus.NOT_FOUND, ex.getMessage(), null, null, webRequest);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail);
     }
 
 }
