@@ -1,0 +1,33 @@
+spring:
+    application:
+        name: grade
+
+    datasource:
+        url: jdbc:postgresql://localhost:5432/grade_db
+        username: grade_user
+        password: testSecret!
+        driver-class-name: org.postgresql.Driver
+
+    jpa:
+        hibernate:
+            ddl-auto: validate
+        show-sql: true
+
+    liquibase:
+        change-log: classpath:db/changelog/db.changelog-master.xml
+
+    kafka:
+        bootstrap-servers: localhost:9092
+        consumer:
+            group-id: grade-service-group
+            auto-offset-reset: earliest
+            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+            properties:
+                spring.json.trusted.packages: "*"
+        producer:
+            key-serializer: org.apache.kafka.common.serialization.StringSerializer
+            value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+server:
+    port: 8083

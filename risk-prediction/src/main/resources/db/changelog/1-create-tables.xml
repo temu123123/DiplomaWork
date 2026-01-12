@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.10.xsd">
+
+    <!-- ====================================== -->
+    <!-- Таблица RiskAssessment -->
+    <!-- ====================================== -->
+    <changeSet id="1-create-risk-assessment" author="tim">
+        <createTable tableName="risk_assessment">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="student_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="risk_level" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="risk_score" type="DECIMAL(5,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="attendance_factor" type="DECIMAL(5,2)"/>
+            <column name="grade_factor" type="DECIMAL(5,2)"/>
+            <column name="calculated_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="comment" type="VARCHAR(1000)"/>
+        </createTable>
+
+        <createIndex indexName="idx_risk_assessment_student_id" tableName="risk_assessment">
+            <column name="student_id"/>
+        </createIndex>
+
+        <createIndex indexName="idx_risk_assessment_calculated_at" tableName="risk_assessment">
+            <column name="calculated_at"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

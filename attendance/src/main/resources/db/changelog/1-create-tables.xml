@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.10.xsd">
+
+    <!-- ====================================== -->
+    <!-- 1. Таблица AttendanceType -->
+    <!-- ====================================== -->
+    <changeSet id="1-create-attendance-type" author="tim">
+        <createTable tableName="attendance_type">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(100)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="description" type="TEXT"/>
+        </createTable>
+    </changeSet>
+
+    <!-- ====================================== -->
+    <!-- 2. Таблица Attendance -->
+    <!-- ====================================== -->
+    <changeSet id="2-create-attendance" author="tim">
+        <createTable tableName="attendance">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="student_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="course_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="attendance_date" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="attendance_type_id" type="UUID">
+                <constraints nullable="false"
+                             foreignKeyName="fk_attendance_type"
+                             references="attendance_type(id)"/>
+            </column>
+            <column name="reason" type="VARCHAR(500)"/>
+            <column name="is_excused" type="BOOLEAN"/>
+
+            <!-- Audit columns -->
+            <column name="created_at" type="TIMESTAMP"
+                    defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="UUID"/>
+            <column name="last_modified_at" type="TIMESTAMP"
+                    defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="UUID"/>
+        </createTable>
+
+        <createIndex indexName="idx_attendance_student_id" tableName="attendance">
+            <column name="student_id"/>
+        </createIndex>
+
+        <createIndex indexName="idx_attendance_course_id" tableName="attendance">
+            <column name="course_id"/>
+        </createIndex>
+
+        <createIndex indexName="idx_attendance_date" tableName="attendance">
+            <column name="attendance_date"/>
+        </createIndex>
+    </changeSet>
+
+    <!-- ====================================== -->
+    <!-- 3. Инициализация типов пропусков -->
+    <!-- ====================================== -->
+    <changeSet id="3-insert-attendance-types" author="tim">
+        <insert tableName="attendance_type">
+            <column name="id" valueComputed="gen_random_uuid()"/>
+            <column name="name" value="Уважительная причина"/>
+            <column name="description" value="Пропуск по уважительной причине"/>
+        </insert>
+        <insert tableName="attendance_type">
+            <column name="id" valueComputed="gen_random_uuid()"/>
+            <column name="name" value="Неуважительная причина"/>
+            <column name="description" value="Пропуск без уважительной причины"/>
+        </insert>
+        <insert tableName="attendance_type">
+            <column name="id" valueComputed="gen_random_uuid()"/>
+            <column name="name" value="Болезнь"/>
+            <column name="description" value="Пропуск по болезни"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

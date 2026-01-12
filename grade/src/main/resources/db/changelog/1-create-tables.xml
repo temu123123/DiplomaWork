@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.10.xsd">
+
+    <!-- ====================================== -->
+    <!-- 1. Таблица GradeType -->
+    <!-- ====================================== -->
+    <changeSet id="1-create-grade-type" author="tim">
+        <createTable tableName="grade_type">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(100)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="description" type="TEXT"/>
+            <column name="max_value" type="DECIMAL(3,2)"/>
+        </createTable>
+    </changeSet>
+
+    <!-- ====================================== -->
+    <!-- 2. Таблица Grade -->
+    <!-- ====================================== -->
+    <changeSet id="2-create-grade" author="tim">
+        <createTable tableName="grade">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="student_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="course_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="grade_type_id" type="UUID">
+                <constraints nullable="false"
+                             foreignKeyName="fk_grade_type"
+                             references="grade_type(id)"/>
+            </column>
+            <column name="grade_value" type="DECIMAL(3,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="grade_date" type="DATE"/>
+            <column name="comment" type="VARCHAR(1000)"/>
+
+            <!-- Audit columns -->
+            <column name="created_at" type="TIMESTAMP"
+                    defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="UUID"/>
+            <column name="last_modified_at" type="TIMESTAMP"
+                    defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="UUID"/>
+        </createTable>
+
+        <createIndex indexName="idx_grade_student_id" tableName="grade">
+            <column name="student_id"/>
+        </createIndex>
+
+        <createIndex indexName="idx_grade_course_id" tableName="grade">
+            <column name="course_id"/>
+        </createIndex>
+
+        <createIndex indexName="idx_grade_date" tableName="grade">
+            <column name="grade_date"/>
+        </createIndex>
+    </changeSet>
+
+    <!-- ====================================== -->
+    <!-- 3. Инициализация типов оценок -->
+    <!-- ====================================== -->
+    <changeSet id="3-insert-grade-types" author="tim">
+        <insert tableName="grade_type">
+            <column name="id" valueComputed="gen_random_uuid()"/>
+            <column name="name" value="Экзамен"/>
+            <column name="description" value="Экзаменационная оценка"/>
+            <column name="max_value" value="100.0"/>
+        </insert>
+        <insert tableName="grade_type">
+            <column name="id" valueComputed="gen_random_uuid()"/>
+            <column name="name" value="Зачет"/>
+            <column name="description" value="Зачетная оценка"/>
+            <column name="max_value" value="100.0"/>
+        </insert>
+        <insert tableName="grade_type">
+            <column name="id" valueComputed="gen_random_uuid()"/>
+            <column name="name" value="Курсовая работа"/>
+            <column name="description" value="Оценка за курсовую работу"/>
+            <column name="max_value" value="100.0"/>
+        </insert>
+        <insert tableName="grade_type">
+            <column name="id" valueComputed="gen_random_uuid()"/>
+            <column name="name" value="Промежуточная аттестация"/>
+            <column name="description" value="Промежуточная оценка"/>
+            <column name="max_value" value="100.0"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
