@@ -6,6 +6,7 @@ import com.diploma.notification.service.NotificationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,12 +21,14 @@ public class NotificationController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN', 'DEAN')")
     public NotificationResponse sendNotification(@RequestBody @Valid NotificationRequest request) {
         return service.sendNotification(request);
     }
 
     @GetMapping("/recipient/{recipientId}")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAnyRole('STUDENT', 'TEACHER', 'ADMIN', 'DEAN')")
     public List<NotificationResponse> getNotificationsByRecipient(@PathVariable UUID recipientId) {
         return service.getNotificationsByRecipient(recipientId);
     }

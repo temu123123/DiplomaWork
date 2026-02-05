@@ -18,7 +18,7 @@ public interface StudentGroupMapper {
     @Mapping(target = "specialty", ignore = true)
     StudentGroup requestToEntity(StudentGroupRequest request);
 
-    @Mapping(target = "specialtyId", source = "specialty.id")
+    @Mapping(target = "specialtyName", source = "specialty.name")
     StudentGroupResponse entityToResponse(StudentGroup entity);
 
     @Mapping(target = "id", ignore = true)

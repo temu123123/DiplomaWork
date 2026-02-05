@@ -6,6 +6,6 @@ import java.util.UUID;
 public record StudentGroupResponse(
         UUID id,
         String name,
-        UUID specialtyId,
+        String specialtyName,
         Integer year
 ) {}

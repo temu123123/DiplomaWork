@@ -6,7 +6,7 @@ import java.util.UUID;
 public record CourseResponse(
         UUID id,
         String name,
-        Set<UUID> specialtyIds,
+        Set<String> specialtyNames,
         Integer semester,
         UUID teacherId
 ) {}

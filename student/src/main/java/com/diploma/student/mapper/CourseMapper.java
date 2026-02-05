@@ -23,18 +23,17 @@ public interface CourseMapper {
     @Mapping(target = "specialties", ignore = true)
     Course requestToEntity(CourseRequest request);
 
-    @Mapping(target = "specialtyIds", source = "specialties")
+    @Mapping(target = "specialtyNames", source = "specialties")
     CourseResponse entityToResponse(Course entity);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "specialties", ignore = true)
     void updateEntityFromRequest(CourseRequest request, @MappingTarget Course entity);
 
-    default Set<UUID> mapSpecialtiesToIds(Set<Specialty> specialties) {
-        return specialties == null
-                ? Set.of()
-                : specialties.stream()
-                .map(BaseEntity::getId)
+    default Set<String> mapSpecialtiesToNames(Set<Specialty> specialties) {
+        if (specialties == null) return Set.of();
+        return specialties.stream()
+                .map(Specialty::getName)
                 .collect(java.util.stream.Collectors.toSet());
     }
 }

@@ -68,9 +68,18 @@ public class NotificationService {
         }
     }
 
+    @org.springframework.beans.factory.annotation.Value("${spring.mail.username:}")
+    private String mailUsername;
+
     private void sendEmail(Notification notification) {
         if (notification.getRecipientEmail() == null || notification.getRecipientEmail().isBlank()) {
             throw new IllegalArgumentException("Email address is required for email notification");
+        }
+
+        if (mailUsername == null || mailUsername.isBlank()) {
+            log.warn("SMTP credentials not configured. Email to {} simulated. Content:\nSubject: {}\nBody: {}", 
+                notification.getRecipientEmail(), notification.getSubject(), notification.getContent());
+            return;
         }
 
         SimpleMailMessage message = new SimpleMailMessage();

@@ -14,15 +14,19 @@ public interface StudentMapper {
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "userId", source = "request.userId")
     @Mapping(target = "fullName", source = "request.fullName")
+    @Mapping(target = "email", source = "request.email")
     @Mapping(target = "status", source = "request.status")
     Student requestToEntity(StudentRequest request);
 
-    @Mapping(target = "groupId", source = "group.id")
+    @Mapping(target = "groupName", source = "group.name")
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     StudentResponse entityToResponse(Student entity);
 
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "userId", source = "request.userId")
     @Mapping(target = "fullName", source = "request.fullName")
     @Mapping(target = "status", source = "request.status")
+    @Mapping(target = "email", source = "request.email")
     void updateEntityFromRequest(StudentRequest request, @MappingTarget Student entity);
 }

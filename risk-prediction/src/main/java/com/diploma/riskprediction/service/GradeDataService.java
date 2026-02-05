@@ -11,11 +11,16 @@ import java.util.UUID;
 @Service
 public class GradeDataService {
 
-    // TODO: Реализовать gRPC клиент для grade-service
-    // Пока возвращаем заглушку
+    private final com.diploma.riskprediction.client.GradeGrpcClient gradeGrpcClient;
+
     public Double getAverageGrade(UUID studentId) {
-        log.warn("Using stub for grade data. StudentId: {}", studentId);
-        // Заглушка - в реальности будет gRPC вызов к grade-service
-        return null;
+        log.info("Fetching grade data via gRPC for student: {}", studentId);
+        try {
+            var stats = gradeGrpcClient.getGradeStats(studentId);
+            return stats.getAverageGrade();
+        } catch (Exception e) {
+            log.error("Failed to fetch grade data: {}", e.getMessage());
+            return null;
+        }
     }
 }

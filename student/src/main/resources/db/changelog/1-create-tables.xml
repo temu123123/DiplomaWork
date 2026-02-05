@@ -14,7 +14,7 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="name" type="VARCHAR(255)">
-                <constraints nullable="false"/>
+                <constraints nullable="false" unique="true"/>
             </column>
             <column name="description" type="TEXT">
                 <constraints nullable="false"/>
@@ -31,7 +31,7 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="name" type="VARCHAR(255)">
-                <constraints nullable="false"/>
+                <constraints nullable="false" unique="true"/>
             </column>
             <column name="semester" type="INT"/>
             <column name="teacher_id" type="UUID"/>
@@ -64,8 +64,8 @@
             <column name="id" type="UUID">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="name" type="VARCHAR(50)">
-                <constraints nullable="false"/>
+            <column name="name" type="VARCHAR(100)">
+                <constraints nullable="false" unique="true"/>
             </column>
             <column name="specialty_id" type="UUID">
                 <constraints nullable="false"

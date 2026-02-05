@@ -32,8 +32,8 @@ public class AttendanceService implements BaseService<AttendanceRequest, Attenda
     public AttendanceResponse create(AttendanceRequest request) {
         Attendance entity = mapper.requestToEntity(request);
 
-        AttendanceType attendanceType = attendanceTypeRepository.findById(request.attendanceTypeId())
-                .orElseThrow(() -> new AttendanceTypeNotFoundException("AttendanceType not found with ID: " + request.attendanceTypeId()));
+        AttendanceType attendanceType = attendanceTypeRepository.findByName(request.attendanceTypeName())
+                .orElseThrow(() -> new AttendanceTypeNotFoundException("AttendanceType not found with name: " + request.attendanceTypeName()));
         entity.setAttendanceType(attendanceType);
 
         Attendance saved = repository.save(entity);
@@ -58,9 +58,9 @@ public class AttendanceService implements BaseService<AttendanceRequest, Attenda
 
         mapper.updateEntityFromRequest(request, attendance);
 
-        if (request.attendanceTypeId() != null) {
-            AttendanceType attendanceType = attendanceTypeRepository.findById(request.attendanceTypeId())
-                    .orElseThrow(() -> new AttendanceTypeNotFoundException("AttendanceType not found with ID: " + request.attendanceTypeId()));
+        if (request.attendanceTypeName() != null) {
+            AttendanceType attendanceType = attendanceTypeRepository.findByName(request.attendanceTypeName())
+                    .orElseThrow(() -> new AttendanceTypeNotFoundException("AttendanceType not found with name: " + request.attendanceTypeName()));
             attendance.setAttendanceType(attendanceType);
         }
 

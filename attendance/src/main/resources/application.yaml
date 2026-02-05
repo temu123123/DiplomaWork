@@ -1,9 +1,14 @@
+springdoc:
+  api-docs:
+    path: /attendance-openapi/v3/api-docs
+    resolve-server-url: true
+
 spring:
     application:
         name: attendance
 
     datasource:
-        url: jdbc:postgresql://localhost:5432/attendance_db
+        url: jdbc:postgresql://localhost:5433/attendance_db
         username: attendance_user
         password: testSecret!
         driver-class-name: org.postgresql.Driver
@@ -15,6 +20,13 @@ spring:
 
     liquibase:
         change-log: classpath:db/changelog/db.changelog-master.xml
+
+    security:
+        oauth2:
+            resourceserver:
+                jwt:
+                    issuer-uri: http://localhost:8090/realms/diploma-realm
+                    jwk-set-uri: http://localhost:8090/realms/diploma-realm/protocol/openid-connect/certs
 
     kafka:
         bootstrap-servers: localhost:9092
@@ -29,5 +41,10 @@ spring:
             key-serializer: org.apache.kafka.common.serialization.StringSerializer
             value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
+    grpc:
+        server:
+            port: 9082
+
 server:
     port: 8082
+    forward-headers-strategy: framework

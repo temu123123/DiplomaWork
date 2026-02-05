@@ -11,11 +11,16 @@ import java.util.UUID;
 @Service
 public class AttendanceDataService {
 
-    // TODO: Реализовать gRPC клиент для attendance-service
-    // Пока возвращаем заглушку
+    private final com.diploma.riskprediction.client.AttendanceGrpcClient attendanceGrpcClient;
+
     public Long getUnexcusedCount(UUID studentId) {
-        log.warn("Using stub for attendance data. StudentId: {}", studentId);
-        // Заглушка - в реальности будет gRPC вызов к attendance-service
-        return 0L;
+        log.info("Fetching attendance data via gRPC for student: {}", studentId);
+        try {
+            var stats = attendanceGrpcClient.getAttendanceStats(studentId);
+            return (long) stats.getUnexcusedAbsences();
+        } catch (Exception e) {
+            log.error("Failed to fetch attendance data: {}", e.getMessage());
+            return 0L; // Fallback
+        }
     }
 }

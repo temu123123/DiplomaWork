@@ -6,10 +6,12 @@ import com.diploma.attendance.service.AttendanceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/v1/attendances")
@@ -20,36 +22,42 @@ public class AttendanceController {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAnyRole('STUDENT', 'TEACHER', 'ADMIN', 'DEAN')")
     public AttendanceResponse getAttendance(@PathVariable UUID id) {
         return service.getById(id);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN', 'DEAN')")
     public List<AttendanceResponse> getAllAttendances() {
         return service.getAll();
     }
 
     @GetMapping("/student/{studentId}")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAnyRole('STUDENT', 'TEACHER', 'ADMIN', 'DEAN')")
     public List<AttendanceResponse> getAttendancesByStudent(@PathVariable UUID studentId) {
         return service.getByStudentId(studentId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
     public AttendanceResponse addAttendance(@RequestBody @Valid AttendanceRequest request) {
         return service.create(request);
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAnyRole('TEACHER', 'ADMIN')")
     public AttendanceResponse updateAttendance(@PathVariable UUID id, @RequestBody @Valid AttendanceRequest request) {
         return service.update(id, request);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteAttendance(@PathVariable UUID id) {
         service.delete(id);
     }

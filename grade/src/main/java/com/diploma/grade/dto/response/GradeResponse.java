@@ -8,8 +8,7 @@ import java.util.UUID;
 public record GradeResponse(
         UUID id,
         UUID studentId,
-        UUID courseId,
-        UUID gradeTypeId,
+        String courseName,
         String gradeTypeName,
         BigDecimal gradeValue,
         LocalDate gradeDate,

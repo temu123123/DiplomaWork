@@ -1,5 +1,6 @@
 package com.diploma.student.service;
 
+import com.diploma.student.dto.request.AssignGroupRequest;
 import com.diploma.student.exception.StudentGroupNotFoundException;
 import com.diploma.student.repository.StudentGroupRepository;
 import com.diploma.student.repository.StudentRepository;
@@ -29,9 +30,9 @@ public class StudentService implements BaseService<StudentRequest, StudentRespon
     public StudentResponse create(StudentRequest request) {
         Student entity = mapper.requestToEntity(request);
 
-        if (request.groupId() != null) {
-            var group = groupRepository.findById(request.groupId())
-                    .orElseThrow(() -> new StudentGroupNotFoundException("StudentGroup not found with ID: " + request.groupId()));
+        if (request.groupName() != null) {
+            var group = groupRepository.findByName(request.groupName())
+                    .orElseThrow(() -> new StudentGroupNotFoundException("StudentGroup not found with name: " + request.groupName()));
             entity.setGroup(group);
         }
 
@@ -47,9 +48,9 @@ public class StudentService implements BaseService<StudentRequest, StudentRespon
 
         mapper.updateEntityFromRequest(request, student);
 
-        if (request.groupId() != null) {
-            var group = groupRepository.findById(request.groupId())
-                    .orElseThrow(() -> new StudentGroupNotFoundException("StudentGroup not found with ID: " + request.groupId()));
+        if (request.groupName() != null) {
+            var group = groupRepository.findByName(request.groupName())
+                    .orElseThrow(() -> new StudentGroupNotFoundException("StudentGroup not found with name: " + request.groupName()));
             student.setGroup(group);
         }
 
@@ -78,5 +79,20 @@ public class StudentService implements BaseService<StudentRequest, StudentRespon
             throw new StudentNotFoundException("Student not found with ID: " + id);
         }
         repository.deleteById(id);
+    }
+
+    @Transactional
+    public StudentResponse assignGroup(AssignGroupRequest request) {
+        Student student = repository.findById(request.studentId())
+                .orElseThrow(() -> new StudentNotFoundException("Student not found with ID: " + request.studentId()));
+
+        var group = groupRepository.findByName(request.groupName())
+                .orElseThrow(() -> new StudentGroupNotFoundException("StudentGroup not found with name: " + request.groupName()));
+
+        student.setGroup(group);
+        student.setStatus("ACTIVE");
+        
+        repository.save(student);
+        return mapper.entityToResponse(student);
     }
 }

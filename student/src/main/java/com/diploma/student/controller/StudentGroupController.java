@@ -6,6 +6,7 @@ import com.diploma.student.service.StudentGroupService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,30 +21,35 @@ public class StudentGroupController {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAnyRole('STUDENT', 'TEACHER', 'ADMIN', 'DEAN')")
     public StudentGroupResponse getStudentGroup(@PathVariable UUID id) {
         return service.getById(id);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAnyRole('STUDENT', 'TEACHER', 'ADMIN', 'DEAN')")
     public List<StudentGroupResponse> getAllStudentGroups() {
         return service.getAll();
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAnyRole('ADMIN', 'DEAN')")
     public StudentGroupResponse addStudentGroup(@RequestBody @Valid StudentGroupRequest request) {
         return service.create(request);
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAnyRole('ADMIN', 'DEAN')")
     public StudentGroupResponse updateStudentGroup(@PathVariable UUID id, @RequestBody @Valid StudentGroupRequest request) {
         return service.update(id, request);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteStudentGroup(@PathVariable UUID id) {
         service.delete(id);
     }

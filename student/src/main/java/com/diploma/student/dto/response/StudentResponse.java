@@ -5,9 +5,9 @@ import java.time.Instant;
 
 public record StudentResponse(
         UUID id,
-        UUID userId,
         String fullName,
-        UUID groupId,
+        String groupName,
+        String email,
         String status,
         Instant createdAt,
         Instant updatedAt

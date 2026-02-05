@@ -16,8 +16,30 @@ spring:
     liquibase:
         change-log: classpath:db/changelog/db.changelog-master.xml
 
-docker:
-    compose:
-        enabled: true
-        file: ./docker-compose.yml
-        wait-for-services: true
+    security:
+        oauth2:
+            resourceserver:
+                jwt:
+                    issuer-uri: http://localhost:8090/realms/diploma-realm
+                    jwk-set-uri: http://localhost:8090/realms/diploma-realm/protocol/openid-connect/certs
+
+    grpc:
+        server:
+            port: 9081
+
+springdoc:
+  api-docs:
+    path: /student-openapi/v3/api-docs
+    resolve-server-url: true
+
+keycloak:
+  auth-server-url: http://localhost:8090
+  realm: diploma-realm
+  admin:
+    username: ${KEYCLOAK_ADMIN:admin}
+    password: ${KEYCLOAK_ADMIN_PASSWORD:admin}
+    client-id: admin-cli
+
+server:
+  port: 8081
+  forward-headers-strategy: framework

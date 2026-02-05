@@ -27,10 +27,12 @@ public class Student extends AuditEntity {
     @Column(name = "full_name")
     private String fullName;
 
-    @NotNull
     @ManyToOne
     @JoinColumn(name = "group_id")
     private StudentGroup group;
+
+    @Column(name = "email")
+    private String email;
 
     private String status;
 

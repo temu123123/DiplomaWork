@@ -29,9 +29,12 @@ public class CourseService implements BaseService<CourseRequest, CourseResponse>
     public CourseResponse create(CourseRequest request) {
         Course entity = courseMapper.requestToEntity(request);
 
-        if (request.specialtyIds() != null && !request.specialtyIds().isEmpty()) {
-            var specialties = specialtyRepository.findAllById(request.specialtyIds());
-            entity.setSpecialties(Set.copyOf(specialties));
+        if (request.specialtyNames() != null && !request.specialtyNames().isEmpty()) {
+            Set<com.diploma.student.entity.Specialty> specialties = request.specialtyNames().stream()
+                    .map(name -> specialtyRepository.findByName(name)
+                            .orElseThrow(() -> new com.diploma.student.exception.SpecialtyNotFoundException("Specialty not found with name: " + name)))
+                    .collect(java.util.stream.Collectors.toSet());
+            entity.setSpecialties(specialties);
         }
 
         courseRepository.save(entity);
@@ -46,9 +49,12 @@ public class CourseService implements BaseService<CourseRequest, CourseResponse>
 
         courseMapper.updateEntityFromRequest(request, course);
 
-        if (request.specialtyIds() != null) {
-            var specialties = specialtyRepository.findAllById(request.specialtyIds());
-            course.setSpecialties(Set.copyOf(specialties));
+        if (request.specialtyNames() != null) {
+            Set<com.diploma.student.entity.Specialty> specialties = request.specialtyNames().stream()
+                    .map(name -> specialtyRepository.findByName(name)
+                            .orElseThrow(() -> new com.diploma.student.exception.SpecialtyNotFoundException("Specialty not found with name: " + name)))
+                    .collect(java.util.stream.Collectors.toSet());
+            course.setSpecialties(specialties);
         }
 
         return courseMapper.entityToResponse(courseRepository.save(course));

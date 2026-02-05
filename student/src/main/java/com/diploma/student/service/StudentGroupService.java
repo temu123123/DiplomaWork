@@ -29,9 +29,9 @@ public class StudentGroupService implements BaseService<StudentGroupRequest, Stu
     public StudentGroupResponse create(StudentGroupRequest request) {
         StudentGroup entity = mapper.requestToEntity(request);
 
-        if (request.specialtyId() != null) {
-            var specialty = specialtyRepository.findById(request.specialtyId())
-                    .orElseThrow(() -> new SpecialtyNotFoundException("Specialty not found with ID: " + request.specialtyId()));
+        if (request.specialtyName() != null) {
+            var specialty = specialtyRepository.findByName(request.specialtyName())
+                    .orElseThrow(() -> new SpecialtyNotFoundException("Specialty not found with name: " + request.specialtyName()));
             entity.setSpecialty(specialty);
         }
 
@@ -47,9 +47,9 @@ public class StudentGroupService implements BaseService<StudentGroupRequest, Stu
 
         mapper.updateEntityFromRequest(request, group);
 
-        if (request.specialtyId() != null) {
-            var specialty = specialtyRepository.findById(request.specialtyId())
-                    .orElseThrow(() -> new SpecialtyNotFoundException("Specialty not found with ID: " + request.specialtyId()));
+        if (request.specialtyName() != null) {
+            var specialty = specialtyRepository.findByName(request.specialtyName())
+                    .orElseThrow(() -> new SpecialtyNotFoundException("Specialty not found with name: " + request.specialtyName()));
             group.setSpecialty(specialty);
         }
 

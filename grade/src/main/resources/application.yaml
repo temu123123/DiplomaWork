@@ -1,9 +1,14 @@
+springdoc:
+  api-docs:
+    path: /grade-openapi/v3/api-docs
+    resolve-server-url: true
+
 spring:
     application:
         name: grade
 
     datasource:
-        url: jdbc:postgresql://localhost:5432/grade_db
+        url: jdbc:postgresql://localhost:5434/grade_db
         username: grade_user
         password: testSecret!
         driver-class-name: org.postgresql.Driver
@@ -15,6 +20,13 @@ spring:
 
     liquibase:
         change-log: classpath:db/changelog/db.changelog-master.xml
+
+    security:
+        oauth2:
+            resourceserver:
+                jwt:
+                    issuer-uri: http://localhost:8090/realms/diploma-realm
+                    jwk-set-uri: http://localhost:8090/realms/diploma-realm/protocol/openid-connect/certs
 
     kafka:
         bootstrap-servers: localhost:9092
@@ -29,5 +41,10 @@ spring:
             key-serializer: org.apache.kafka.common.serialization.StringSerializer
             value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
+    grpc:
+        server:
+            port: 9083
+
 server:
     port: 8083
+    forward-headers-strategy: framework

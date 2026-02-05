@@ -35,8 +35,8 @@ public class GradeService implements BaseService<GradeRequest, GradeResponse> {
     public GradeResponse create(GradeRequest request) {
         Grade entity = mapper.requestToEntity(request);
 
-        GradeType gradeType = gradeTypeRepository.findById(request.gradeTypeId())
-                .orElseThrow(() -> new GradeTypeNotFoundException("GradeType not found with ID: " + request.gradeTypeId()));
+        GradeType gradeType = gradeTypeRepository.findByName(request.gradeTypeName())
+                .orElseThrow(() -> new GradeTypeNotFoundException("GradeType not found with name: " + request.gradeTypeName()));
         entity.setGradeType(gradeType);
 
         if (request.gradeDate() == null) {
@@ -64,9 +64,9 @@ public class GradeService implements BaseService<GradeRequest, GradeResponse> {
 
         mapper.updateEntityFromRequest(request, grade);
 
-        if (request.gradeTypeId() != null) {
-            GradeType gradeType = gradeTypeRepository.findById(request.gradeTypeId())
-                    .orElseThrow(() -> new GradeTypeNotFoundException("GradeType not found with ID: " + request.gradeTypeId()));
+        if (request.gradeTypeName() != null) {
+            GradeType gradeType = gradeTypeRepository.findByName(request.gradeTypeName())
+                    .orElseThrow(() -> new GradeTypeNotFoundException("GradeType not found with name: " + request.gradeTypeName()));
             grade.setGradeType(gradeType);
         }
 

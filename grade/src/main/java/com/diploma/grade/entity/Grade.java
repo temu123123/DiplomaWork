@@ -23,9 +23,11 @@ public class Grade extends AuditEntity {
     @Column(name = "student_id")
     private UUID studentId;
 
-    @NotNull
     @Column(name = "course_id")
     private UUID courseId;
+
+    @Column(name = "course_name")
+    private String courseName;
 
     @NotNull
     @ManyToOne
@@ -33,7 +35,7 @@ public class Grade extends AuditEntity {
     private GradeType gradeType;
 
     @NotNull
-    @Column(name = "grade_value", precision = 3, scale = 2)
+    @Column(name = "grade_value", precision = 5, scale = 2)
     private BigDecimal gradeValue;
 
     @Column(name = "grade_date")

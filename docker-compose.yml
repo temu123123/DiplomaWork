@@ -1,7 +1,6 @@
 version: "3.9"
 
 services:
-  # PostgreSQL для student-service
   postgres-student:
     image: postgres:17
     container_name: postgres-student
@@ -14,17 +13,14 @@ services:
       - student-db-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-    networks:
-      - diploma-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U student_user -d student_db"]
+      test: [ "CMD-SHELL", "pg_isready -U student_user -d student_db" ]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
       - diploma-network
 
-  # PostgreSQL для attendance-service
   postgres-attendance:
     image: postgres:17
     container_name: postgres-attendance
@@ -38,14 +34,13 @@ services:
     ports:
       - "5433:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U attendance_user -d attendance_db"]
+      test: [ "CMD-SHELL", "pg_isready -U attendance_user -d attendance_db" ]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
       - diploma-network
 
-  # PostgreSQL для grade-service
   postgres-grade:
     image: postgres:17
     container_name: postgres-grade
@@ -59,14 +54,13 @@ services:
     ports:
       - "5434:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U grade_user -d grade_db"]
+      test: [ "CMD-SHELL", "pg_isready -U grade_user -d grade_db" ]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
       - diploma-network
 
-  # PostgreSQL для risk-prediction-service
   postgres-risk:
     image: postgres:17
     container_name: postgres-risk
@@ -80,14 +74,13 @@ services:
     ports:
       - "5435:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U risk_user -d risk_db"]
+      test: [ "CMD-SHELL", "pg_isready -U risk_user -d risk_db" ]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
       - diploma-network
 
-  # MongoDB для notification-service и risk-prediction-service
   mongodb:
     image: mongo:7
     container_name: mongodb
@@ -100,56 +93,44 @@ services:
     ports:
       - "27017:27017"
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')", "-u", "mongo_user", "-p", "testSecret!", "--authenticationDatabase", "admin" ]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
       - diploma-network
 
-  # Zookeeper для Kafka
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.5.0
-    container_name: zookeeper
-    restart: unless-stopped
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-    ports:
-      - "2181:2181"
-    healthcheck:
-      test: ["CMD", "nc", "-z", "localhost", "2181"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - diploma-network
-
-  # Kafka
   kafka:
     image: confluentinc/cp-kafka:7.5.0
     container_name: kafka
     restart: unless-stopped
-    depends_on:
-      - zookeeper
     ports:
       - "9092:9092"
     environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_NODE_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092'
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_JMX_PORT: 9101
+      KAFKA_JMX_HOSTNAME: localhost
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:29093'
+      KAFKA_LISTENERS: 'PLAINTEXT://kafka:29092,CONTROLLER://kafka:29093,PLAINTEXT_HOST://0.0.0.0:9092'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
     healthcheck:
-      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      test: [ "CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092" ]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
       - diploma-network
 
-  # Elasticsearch
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
     container_name: elasticsearch
@@ -164,14 +145,13 @@ services:
       - "9200:9200"
       - "9300:9300"
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      test: [ "CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1" ]
       interval: 30s
       timeout: 10s
       retries: 5
     networks:
       - diploma-network
 
-  # Kibana для визуализации Elasticsearch
   kibana:
     image: docker.elastic.co/kibana/kibana:8.11.0
     container_name: kibana
@@ -184,39 +164,40 @@ services:
     ports:
       - "5601:5601"
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:5601/api/status || exit 1"]
+      test: [ "CMD-SHELL", "curl -f http://localhost:5601/api/status || exit 1" ]
       interval: 30s
       timeout: 10s
       retries: 5
     networks:
       - diploma-network
 
-  # Keycloak для аутентификации и авторизации
   keycloak:
     image: quay.io/keycloak/keycloak:24.0
     container_name: keycloak
     restart: unless-stopped
-    command: start-dev
+    command: start-dev --import-realm
+    env_file:
+      - .env
     environment:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://postgres-keycloak:5432/keycloak
       KC_DB_USERNAME: keycloak_user
       KC_DB_PASSWORD: testSecret!
+    volumes:
+      - keycloak-db-data:/var/lib/postgresql/data
+      - ./config/keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
     ports:
       - "8090:8080"
     depends_on:
       - postgres-keycloak
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/health/ready || exit 1"]
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/health/ready || exit 1" ]
       interval: 30s
       timeout: 10s
       retries: 5
     networks:
       - diploma-network
 
-  # PostgreSQL для Keycloak
   postgres-keycloak:
     image: postgres:17
     container_name: postgres-keycloak
@@ -230,7 +211,7 @@ services:
     ports:
       - "5436:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U keycloak_user -d keycloak"]
+      test: [ "CMD-SHELL", "pg_isready -U keycloak_user -d keycloak" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -245,6 +226,7 @@ volumes:
   mongo-data:
   elasticsearch-data:
   keycloak-db-data:
+
 
 networks:
   diploma-network:

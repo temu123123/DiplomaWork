@@ -13,19 +13,22 @@ public interface AttendanceMapper {
 
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "studentId", source = "request.studentId")
-    @Mapping(target = "courseId", source = "request.courseId")
+    @Mapping(target = "courseId", ignore = true)
+    @Mapping(target = "courseName", source = "request.courseName")
     @Mapping(target = "attendanceDate", source = "request.attendanceDate")
     @Mapping(target = "reason", source = "request.reason")
     @Mapping(target = "isExcused", source = "request.isExcused")
     Attendance requestToEntity(AttendanceRequest request);
 
-    @Mapping(target = "attendanceTypeId", source = "attendanceType.id")
     @Mapping(target = "attendanceTypeName", source = "attendanceType.name")
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     AttendanceResponse entityToResponse(Attendance entity);
 
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "studentId", source = "request.studentId")
-    @Mapping(target = "courseId", source = "request.courseId")
+    @Mapping(target = "courseId", ignore = true)
+    @Mapping(target = "courseName", source = "request.courseName")
     @Mapping(target = "attendanceDate", source = "request.attendanceDate")
     @Mapping(target = "reason", source = "request.reason")
     @Mapping(target = "isExcused", source = "request.isExcused")

@@ -7,9 +7,8 @@ import java.util.UUID;
 public record AttendanceResponse(
         UUID id,
         UUID studentId,
-        UUID courseId,
+        String courseName,
         LocalDate attendanceDate,
-        UUID attendanceTypeId,
         String attendanceTypeName,
         String reason,
         Boolean isExcused,

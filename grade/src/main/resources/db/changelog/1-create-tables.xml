@@ -17,7 +17,7 @@
                 <constraints nullable="false" unique="true"/>
             </column>
             <column name="description" type="TEXT"/>
-            <column name="max_value" type="DECIMAL(3,2)"/>
+            <column name="max_value" type="DECIMAL(5,2)"/>
         </createTable>
     </changeSet>
 
@@ -40,7 +40,7 @@
                              foreignKeyName="fk_grade_type"
                              references="grade_type(id)"/>
             </column>
-            <column name="grade_value" type="DECIMAL(3,2)">
+            <column name="grade_value" type="DECIMAL(5,2)">
                 <constraints nullable="false"/>
             </column>
             <column name="grade_date" type="DATE"/>

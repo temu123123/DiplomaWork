@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-01-12T11:10:26+0100",
+    date = "2026-02-05T10:45:24+0100",
     comments = "version: 1.6.3, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.10.jar, environment: Java 21.0.8 (Microsoft)"
 )
 @Component
@@ -27,7 +27,7 @@ public class AttendanceMapperImpl implements AttendanceMapper {
         Attendance attendance = new Attendance();
 
         attendance.setStudentId( request.studentId() );
-        attendance.setCourseId( request.courseId() );
+        attendance.setCourseName( request.courseName() );
         attendance.setAttendanceDate( request.attendanceDate() );
         attendance.setReason( request.reason() );
         attendance.setIsExcused( request.isExcused() );
@@ -41,20 +41,18 @@ public class AttendanceMapperImpl implements AttendanceMapper {
             return null;
         }
 
-        UUID attendanceTypeId = null;
         String attendanceTypeName = null;
         UUID id = null;
         UUID studentId = null;
-        UUID courseId = null;
+        String courseName = null;
         LocalDate attendanceDate = null;
         String reason = null;
         Boolean isExcused = null;
 
-        attendanceTypeId = entityAttendanceTypeId( entity );
         attendanceTypeName = entityAttendanceTypeName( entity );
         id = entity.getId();
         studentId = entity.getStudentId();
-        courseId = entity.getCourseId();
+        courseName = entity.getCourseName();
         attendanceDate = entity.getAttendanceDate();
         reason = entity.getReason();
         isExcused = entity.getIsExcused();
@@ -62,7 +60,7 @@ public class AttendanceMapperImpl implements AttendanceMapper {
         Instant createdAt = null;
         Instant updatedAt = null;
 
-        AttendanceResponse attendanceResponse = new AttendanceResponse( id, studentId, courseId, attendanceDate, attendanceTypeId, attendanceTypeName, reason, isExcused, createdAt, updatedAt );
+        AttendanceResponse attendanceResponse = new AttendanceResponse( id, studentId, courseName, attendanceDate, attendanceTypeName, reason, isExcused, createdAt, updatedAt );
 
         return attendanceResponse;
     }
@@ -74,18 +72,10 @@ public class AttendanceMapperImpl implements AttendanceMapper {
         }
 
         entity.setStudentId( request.studentId() );
-        entity.setCourseId( request.courseId() );
+        entity.setCourseName( request.courseName() );
         entity.setAttendanceDate( request.attendanceDate() );
         entity.setReason( request.reason() );
         entity.setIsExcused( request.isExcused() );
-    }
-
-    private UUID entityAttendanceTypeId(Attendance attendance) {
-        AttendanceType attendanceType = attendance.getAttendanceType();
-        if ( attendanceType == null ) {
-            return null;
-        }
-        return attendanceType.getId();
     }
 
     private String entityAttendanceTypeName(Attendance attendance) {

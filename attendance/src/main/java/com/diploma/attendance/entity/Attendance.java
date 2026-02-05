@@ -22,9 +22,11 @@ public class Attendance extends AuditEntity {
     @Column(name = "student_id")
     private UUID studentId;
 
-    @NotNull
     @Column(name = "course_id")
     private UUID courseId;
+
+    @Column(name = "course_name")
+    private String courseName;
 
     @NotNull
     @Column(name = "attendance_date")

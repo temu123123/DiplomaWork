@@ -1,10 +1,22 @@
+springdoc:
+  api-docs:
+    path: /notification-openapi/v3/api-docs
+    resolve-server-url: true
+
 spring:
     application:
         name: notification
 
     data:
         mongodb:
-            uri: mongodb://localhost:27017/notification_db
+            uri: mongodb://mongo_user:testSecret!@localhost:27017/notification_db?authSource=admin
+
+    security:
+        oauth2:
+            resourceserver:
+                jwt:
+                    issuer-uri: http://localhost:8090/realms/diploma-realm
+                    jwk-set-uri: http://localhost:8090/realms/diploma-realm/protocol/openid-connect/certs
 
     kafka:
         bootstrap-servers: localhost:9092
@@ -12,8 +24,11 @@ spring:
             group-id: notification-service-group
             auto-offset-reset: earliest
             key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-            value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+            value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
             properties:
+                spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+                spring.json.use.type.headers: false
+                spring.json.value.default.type: java.util.HashMap
                 spring.json.trusted.packages: "*"
         producer:
             key-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -31,5 +46,14 @@ spring:
                     starttls:
                         enable: true
 
+    grpc:
+        client:
+            student-service:
+                address: 'static://localhost:9081'
+
+notification:
+    test-email: ${NOTIFICATIONS_TEST_EMAIL:}
+
 server:
     port: 8085
+    forward-headers-strategy: framework
